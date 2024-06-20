@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Success Page</title>
+    <!-- Include the qrcode-generator library -->
+    <script src="qrcode.min.js"></script>
+</head>
+<body>
+
+<!-- Your success page content -->
+
+<h1>Thank you for your purchase!</h1>
+
+<div id="qrCodes"></div>
+
+<script>
+// Function to generate QR codes
+function generateQRCode(itemName, itemCount) {
+    var qrCodesDiv = document.getElementById('qrCodes');
+    var qrCodesData = []; // Array to store QR code IDs
+
+    for (var i = 1; i <= itemCount; i++) {
+        var qr = qrcode(10, 'L'); // Create a QRCode object with size 10 and error correction level 'L'
+        var qrData = itemName + ('00' + i).slice(-3); // Format the item name with leading zeros for numbers less than 1000
+        qr.addData(qrData);
+        qr.make();
+        var qrImage = qr.createImgTag(); // Generate image tag for the QR code
+        qrCodesDiv.innerHTML += qrImage; // Insert QR code image into the div
+        qrCodesData.push(qrData); // Push the QR code ID into the array
+        qr.clear(); // Clear the QRCode object for the next iteration
+    }
+
+    // Save the QR code IDs into a JSON file
+     if (typeof saveQRCodeData === 'function') { 
+        saveQRCodeData( JSON.stringify(qrCodesData) );
+     }
+}
+
+// Function to save QR code data into a JSON file
+function saveQRCodeData(data) { 
+    var jsonData = JSON.stringify(data);
+
+    // Create a Blob object containing the JSON data
+    var blob = new Blob([jsonData], { type: 'application/json' });
+
+    // Create a temporary anchor element to trigger the download
+    var a = document.createElement('a');
+    var url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = 'qr_codes.json';
+
+    // Trigger the download
+    document.body.appendChild(a);
+    a.click();
+
+    // Clean up
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+} 
+
+// Call the function to generate QR codes when the page loads
+window.onload = function() {
+    generateQRCode('itemname', 5); // Example usage: itemname is the item name, 5 is the number of items purchased
+};
+</script>
+
+</body>
+</html>

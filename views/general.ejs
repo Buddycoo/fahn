@@ -1,0 +1,82 @@
+<!-- general.ejs -->
+
+<%- include("partials/header.ejs") %>
+
+<div class="container">
+    <h2>General Tickets</h2>
+    <div class="cart">
+        <div class="cart-header">
+            <div class="cart-header-item">Product</div>
+            <div class="cart-header-item">Quantity</div>
+            <div class="cart-header-item">Total</div>
+        </div>
+
+        <!-- General Ticket for Males or Standard -->
+        <div class="cart-item">
+            <div class="cart-product">
+                <h3>Standard</h3>
+                <p>Price: <span style="text-decoration: line-through;">₹999</span> ₹749</p>
+            </div>
+            <div class="cart-quantity">
+                <button class="quantity-button minus" onclick="decreaseQuantity('general-male')">-</button>
+                <input type="number" class="quantity-input" id="general-male-quantity" value="0" min="0">
+                <button class="quantity-button plus" onclick="increaseQuantity('general-male')">+</button>
+            </div>
+            <div class="cart-total" id="general-male-total">₹0</div>
+        </div>
+
+        <div class="cart-summary">
+            <p>Estimated total: <span id="estimated-total">₹0</span></p>
+            <button class="btn btn-primary" id="checkout-button" onclick="redirectToCheckout()" disabled>Check out</button>
+        </div>
+    </div>
+</div>
+
+<%- include("partials/footer.ejs") %>
+
+<script>
+    function increaseQuantity(ticketType) {
+        const quantityInput = document.getElementById(ticketType + "-quantity");
+        let currentQuantity = parseInt(quantityInput.value);
+        currentQuantity++;
+        quantityInput.value = currentQuantity;
+        updateTotals();
+    }
+
+    function decreaseQuantity(ticketType) {
+        const quantityInput = document.getElementById(ticketType + "-quantity");
+        let currentQuantity = parseInt(quantityInput.value);
+        if (currentQuantity > 0) {
+            currentQuantity--;
+            quantityInput.value = currentQuantity;
+            updateTotals();
+        }
+    }
+
+    function updateTotals() {
+        const maleQuantity = parseInt(document.getElementById("general-male-quantity").value) || 0;
+
+        const maleTotal = maleQuantity * 749;
+
+        document.getElementById("general-male-total").innerText = "₹" + maleTotal.toLocaleString(); // Format for better readability
+    
+        const total = maleTotal;
+
+        document.getElementById("estimated-total").innerText = "₹" + total.toLocaleString(); // Format for better readability
+
+        const checkoutButton = document.getElementById("checkout-button");
+        checkoutButton.disabled = total === 0;
+    }
+
+    function redirectToCheckout() {
+        const maleQuantity = document.getElementById("general-male-quantity").value;
+        
+        const checkoutData = {
+            maleQuantity
+        };
+
+        localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
+
+        window.location.href = "/checkout";
+    }
+</script>

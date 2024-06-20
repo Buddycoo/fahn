@@ -1,0 +1,152 @@
+<!-- checkout.ejs -->
+<%- include("partials/header.ejs") %>
+
+<div class="row g-5 checkout-page">
+    <div class="col-md-5 col-lg-4 order-md-last">
+        <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-primary">Your cart</span>
+            <span class="badge bg-primary rounded-pill" id="cart-count">0</span>
+        </h4>
+        <ul class="list-group mb-3" id="cart-items">
+            <!-- Cart items will be dynamically added here -->
+        </ul>
+
+        <form class="card p-2">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Promo code">
+                <button type="submit" class="btn btn-secondary">Redeem</button>
+            </div>
+            
+        </form>
+    </div>
+    <div class="col-md-7 col-lg-8">
+        <h4 class="mb-3">Billing address</h4>
+        <form class="needs-validation" action="/pay" method="post" novalidate>
+            <input type="hidden" id="totalAmount" name="totalAmount" value="0">
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <label for="firstName" class="form-label">First name<span class="text-body-secondary">*</span></label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="" value="" required>
+                    <div class="invalid-feedback">
+                        Valid first name is required.
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <label for="lastName" class="form-label">Last name</label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="" value="" required>
+                    <div class="invalid-feedback">
+                        Valid last name is required.
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label for="email" class="form-label">Email <span class="text-body-secondary">*Required</span></label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+                    <div class="invalid-feedback">
+                        Please enter a valid email address to get updates
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label for="phone" class="form-label">Phone number <span class="text-body-secondary">*Required</span></label>
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="123-456-7890" required>
+                    <div class="invalid-feedback">
+                        Please enter a valid phone number.
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="same-address">
+                <label class="form-check-label" for="same-address">By clicking this you hereby accept that 
+                    <ul>
+                        <li>Tickets once booked cannot be exchanged or refunded</li>
+                        <li>People in an inebriated state will not be allowed entry.</li>
+                        <li>No outside food and beverages are allowed inside the venue.</li>
+                        <li>FAHNartezan does not take responsibility for the loss or theft of any personal belongings.</li>
+                        <li>The consumption of any illegal substances is strictly prohibited.</li>
+                        <li>Please carry a valid Id proof along with you</li>
+                        <li>Media persons will not be allowed entry without prior permission, and if caught, will be fined ₹50,000.</li>
+                    </ul>
+                </label>
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="save-info">
+                <label class="form-check-label" for="save-info">Save this information for next time</label>
+            </div>
+
+            <hr class="my-4">
+
+            <button class="w-100 btn btn-primary btn-lg" type="submit">Proceed to pay</button>
+        </form>
+    </div>
+</div>
+
+<%- include("partials/footer.ejs") %>
+
+<script>
+    // Function to dynamically update the cart items and total
+    function updateCart() {
+        const cartItemsContainer = document.getElementById("cart-items");
+        const cartCount = document.getElementById("cart-count");
+
+        // Retrieve checkout data from local storage
+        const checkoutData = JSON.parse(localStorage.getItem("checkoutData")) || {};
+        const maleQuantity = parseInt(checkoutData.maleQuantity) || 0;
+        const vipQuantity = parseInt(checkoutData.vipQuantity) || 0;
+        const vvipSingleQuantity = parseInt(checkoutData.vvipSingleQuantity) || 0;
+        const vvipTable2Quantity = parseInt(checkoutData.vvipTable2Quantity) || 0;
+        const vvipTable4Quantity = parseInt(checkoutData.vvipTable4Quantity) || 0;
+        const vvipTable6Quantity = parseInt(checkoutData.vvipTable6Quantity) || 0;
+
+        // Calculate totals
+        const cartItems = [
+            { name: "Standard", price: 749, quantity: maleQuantity },
+            { name: "VIP", price: 1999, quantity: vipQuantity },
+            { name: "VVIP Single", price: 4999, quantity: vvipSingleQuantity },
+            { name: "VVIP Table for 2", price: 7999, quantity: vvipTable2Quantity },
+            { name: "VVIP Table for 4", price: 11999, quantity: vvipTable4Quantity },
+            { name: "VVIP Table for 6", price: 14999, quantity: vvipTable6Quantity }
+        ];
+
+        let total = 0;
+        let itemCount = 0;
+
+        cartItemsContainer.innerHTML = ""; // Clear previous items
+
+        cartItems.forEach(item => {
+            if (item.quantity > 0) {
+                const itemElement = document.createElement("li");
+                itemElement.className = "list-group-item d-flex justify-content-between lh-sm";
+                itemElement.innerHTML = `
+                    <div>
+                        <h6 class="my-0">${item.name}</h6>
+                        <small class="text-body-secondary">Quantity: ${item.quantity}</small>
+                    </div>
+                    <span class="text-body-secondary">₹${item.price * item.quantity}</span>
+                `;
+                cartItemsContainer.appendChild(itemElement);
+                total += item.price * item.quantity;
+                itemCount += item.quantity;
+            }
+        });
+
+        const totalElement = document.createElement("li");
+        totalElement.className = "list-group-item d-flex justify-content-between";
+        totalElement.innerHTML = `
+            <span>Total (INR)</span>
+            <strong>₹${total}</strong>
+        `;
+        cartItemsContainer.appendChild(totalElement);
+        cartCount.innerText = itemCount;
+
+        // Update hidden input field with total amount
+        document.getElementById('totalAmount').value = total;
+    }
+
+    document.addEventListener("DOMContentLoaded", updateCart);
+</script>

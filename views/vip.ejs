@@ -1,0 +1,153 @@
+<%- include("partials/header.ejs") %>
+
+<div class="container">
+    <h2>VIP and VVIP Tickets</h2>
+    <div class="cart">
+        <div class="cart-header">
+            <div class="cart-header-item">Product</div>
+            <div class="cart-header-item">Quantity</div>
+            <div class="cart-header-item">Total</div>
+        </div>
+
+        <!-- VIP Ticket -->
+        <div class="cart-item">
+            <div class="cart-product">
+                <h3>VIP</h3>
+                <p>Price: ₹1999</p>
+            </div>
+            <div class="cart-quantity">
+                <button class="quantity-button minus" onclick="decreaseQuantity('vip')">-</button>
+                <input type="number" class="quantity-input" id="vip-quantity" value="0" min="0">
+                <button class="quantity-button plus" onclick="increaseQuantity('vip')">+</button>
+            </div>
+            <div class="cart-total" id="vip-total">₹0</div>
+        </div>
+
+        <!-- VVIP Single Ticket -->
+        <div class="cart-item">
+            <div class="cart-product">
+                <h3>VVIP Single Ticket</h3>
+                <p>Price: ₹9999</p>
+            </div>
+            <div class="cart-quantity">
+                <button class="quantity-button minus" onclick="decreaseQuantity('vvip-single')">-</button>
+                <input type="number" class="quantity-input" id="vvip-single-quantity" value="0" min="0">
+                <button class="quantity-button plus" onclick="increaseQuantity('vvip-single')">+</button>
+            </div>
+            <div class="cart-total" id="vvip-single-total">₹0</div>
+        </div>
+
+        <!-- VVIP Table of 2 -->
+        <div class="cart-item">
+            <div class="cart-product">
+                <h3>VVIP Table of 2</h3>
+                <p>Price: ₹11999</p>
+            </div>
+            <div class="cart-quantity">
+                <button class="quantity-button minus" onclick="decreaseQuantity('vvip-table-2')">-</button>
+                <input type="number" class="quantity-input" id="vvip-table-2-quantity" value="0" min="0">
+                <button class="quantity-button plus" onclick="increaseQuantity('vvip-table-2')">+</button>
+            </div>
+            <div class="cart-total" id="vvip-table-2-total">₹0</div>
+        </div>
+
+        <!-- VVIP Table of 4 -->
+        <div class="cart-item">
+            <div class="cart-product">
+                <h3>VVIP Table of 4</h3>
+                <p>Price: ₹8999</p>
+            </div>
+            <div class="cart-quantity">
+                <button class="quantity-button minus" onclick="decreaseQuantity('vvip-table-4')">-</button>
+                <input type="number" class="quantity-input" id="vvip-table-4-quantity" value="0" min="0">
+                <button class="quantity-button plus" onclick="increaseQuantity('vvip-table-4')">+</button>
+            </div>
+            <div class="cart-total" id="vvip-table-4-total">₹0</div>
+        </div>
+
+        <!-- VVIP Table of 6 -->
+        <div class="cart-item">
+            <div class="cart-product">
+                <h3>VVIP Table of 6</h3>
+                <p>Price: ₹16499</p>
+            </div>
+            <div class="cart-quantity">
+                <button class="quantity-button minus" onclick="decreaseQuantity('vvip-table-6')">-</button>
+                <input type="number" class="quantity-input" id="vvip-table-6-quantity" value="0" min="0">
+                <button class="quantity-button plus" onclick="increaseQuantity('vvip-table-6')">+</button>
+            </div>
+            <div class="cart-total" id="vvip-table-6-total">₹0</div>
+        </div>
+
+        <div class="cart-summary">
+            <p>Estimated total: <span id="estimated-total">₹0</span></p>
+            <button class="btn btn-primary" id="checkout-button" onclick="redirectToCheckout()" disabled>Check out</button>
+        </div>
+    </div>
+</div>
+
+<%- include("partials/footer.ejs") %>
+
+<script>
+    function increaseQuantity(ticketType) {
+        const quantityInput = document.getElementById(ticketType + "-quantity");
+        const currentQuantity = parseInt(quantityInput.value);
+        quantityInput.value = currentQuantity + 1;
+        updateTotals();
+    }
+
+    function decreaseQuantity(ticketType) {
+        const quantityInput = document.getElementById(ticketType + "-quantity");
+        const currentQuantity = parseInt(quantityInput.value);
+        if (currentQuantity > 0) {
+            quantityInput.value = currentQuantity - 1;
+            updateTotals();
+        }
+    }
+
+    function updateTotals() {
+        const vipQuantity = parseInt(document.getElementById("vip-quantity").value);
+        const vvipSingleQuantity = parseInt(document.getElementById("vvip-single-quantity").value);
+        const vvipTable2Quantity = parseInt(document.getElementById("vvip-table-2-quantity").value);
+        const vvipTable4Quantity = parseInt(document.getElementById("vvip-table-4-quantity").value);
+        const vvipTable6Quantity = parseInt(document.getElementById("vvip-table-6-quantity").value);
+
+        const vipTotal = vipQuantity * 1999;
+        const vvipSingleTotal = vvipSingleQuantity * 9999;
+        const vvipTable2Total = vvipTable2Quantity * 11999;
+        const vvipTable4Total = vvipTable4Quantity * 8999;
+        const vvipTable6Total = vvipTable6Quantity * 16499;
+
+        document.getElementById("vip-total").innerText = "₹" + vipTotal;
+        document.getElementById("vvip-single-total").innerText = "₹" + vvipSingleTotal;
+        document.getElementById("vvip-table-2-total").innerText = "₹" + vvipTable2Total;
+        document.getElementById("vvip-table-4-total").innerText = "₹" + vvipTable4Total;
+        document.getElementById("vvip-table-6-total").innerText = "₹" + vvipTable6Total;
+
+        const totalAmount = vipTotal + vvipSingleTotal + vvipTable2Total + vvipTable4Total + vvipTable6Total;
+        document.getElementById("estimated-total").innerText = "₹" + totalAmount;
+
+        const checkoutButton = document.getElementById("checkout-button");
+        checkoutButton.disabled = totalAmount === 0;
+    }
+
+    function redirectToCheckout() {
+        const vipQuantity = document.getElementById("vip-quantity").value;
+        const vvipSingleQuantity = document.getElementById("vvip-single-quantity").value;
+        const vvipTable2Quantity = document.getElementById("vvip-table-2-quantity").value;
+        const vvipTable4Quantity = document.getElementById("vvip-table-4-quantity").value;
+        const vvipTable6Quantity = document.getElementById("vvip-table-6-quantity").value;
+
+        const checkoutData = {
+            vipQuantity,
+            vvipSingleQuantity,
+            vvipTable2Quantity,
+            vvipTable4Quantity,
+            vvipTable6Quantity
+        };
+
+        localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
+
+        window.location.href = "/checkout";
+    }
+</script>
